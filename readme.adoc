@@ -1,0 +1,22 @@
+= Discussion app
+
+A small comment app for enonic XP +
+This is to be combined with articles blogs or other content.
+
+Current install prosess:
+
+Local build:
+
+* Deploy it using gradle wrapper `gradlew deploy` +
+this deploys it to your current home folder, and server.
+
+Remote server:
+
+ * Build it with the gradle wrapper `gradlew deploy` + 
+ then uploaded the generated .jar file to your server. +
+ The yar file can be found in your hom directory. (Default deploy folder in your server hom) +
+
+Later this app might be uploaded to the enonic market +
+then you can downloud it from the admin applications interface in XP.
+
+-- Created by Persijn --
