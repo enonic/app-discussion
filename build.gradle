@@ -4,7 +4,7 @@ plugins {
 
 app {
     name = project.appName
-    displayName = 'Vanilla Starter Kit'
+    displayName = 'Discussion app'
     vendorName = 'Enonic AS'
     vendorUrl = 'http://enonic.com'
     systemVersion = "${xpVersion}"
@@ -16,7 +16,10 @@ dependencies {
     include "com.enonic.xp:lib-content:${xpVersion}"
     include "com.enonic.xp:lib-portal:${xpVersion}"
     include "com.enonic.xp:lib-thymeleaf:${xpVersion}"
-    //include "com.enonic.xp:lib-mustache:${xpVersion}"
+
+    include "openxp.lib:appersist:1.0.0"
+
+    //Might use later
     //include "com.enonic.xp:lib-i18n:${xpVersion}"
     //include "com.enonic.xp:lib-auth:${xpVersion}"
     //include "com.enonic.xp:lib-context:${xpVersion}"
@@ -27,6 +30,9 @@ dependencies {
 }
 
 repositories {
+    maven {
+        url 'https://dl.bintray.com/openxp/public'
+    }
     mavenLocal()
     jcenter()
     xp.enonicRepo()

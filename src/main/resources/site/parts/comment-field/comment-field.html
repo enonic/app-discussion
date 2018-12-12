@@ -1,0 +1,7 @@
+<section>
+    <div class="discussion">
+        <div class="comments" 
+            th:replace="/site/parts/comment-field/comment-fragment::nestedComment (${ discussion })" 
+            th:remove="tag"></div>
+    </div>
+</section>
