@@ -1,7 +1,13 @@
-<section>
-    <div class="discussion">
-        <div class="comments" 
-            th:replace="/site/parts/comment-field/comment-fragment::nestedComment (${ discussion })" 
-            th:remove="tag"></div>
-    </div>
+<section id="discussion" th:if="${ render }">
+    <a href="#toplevelform">Post new comment</a>
+    <div class="comments" th:replace="/site/parts/comment-field/comment-tree::nestedComment (${ discussion })"
+        th:remove="tag"></div>
+    <form class="startDiscussion" id="toplevelform">
+        <input type="hidden" name="parent" />
+        <label>
+            <h3>New comment</h3>
+            <textarea name="comment"></textarea>
+        </label>
+        <input class="formSub" type="submit" value="Post comment" />
+    </form>
 </section>

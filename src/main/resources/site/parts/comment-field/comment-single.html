@@ -1,0 +1,17 @@
+<div>
+    <div th:fragment="single (comment)" th:remove="tag">
+        <li>
+            <div class="singleComment">
+                <div class="top">
+                    <span class="name" th:text="${ comment.name }">
+                        Username</span>
+                    <time class="time" th:text="${ comment.time }"></time>
+                </div>
+                <p class="text" th:text="${ comment.text }">test</p>
+                <div class="bottom">
+                    <button class="respond">reply</button>
+                </div>
+            </div>
+        </li>
+    </div>
+</div>
