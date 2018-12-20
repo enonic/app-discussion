@@ -1,0 +1,18 @@
+<part>
+    <display-name>Latest comments</display-name>
+    <config>
+        <field-set name="things">
+            <label>Latest comments</label>
+            <items>
+                <input type="Long" name="size">
+                    <label>How many comments to show?</label>
+                    <default>5</default>
+                    <config>
+                        <min>1</min>
+                        <max>20</max>
+                    </config>
+                </input>
+            </items>
+        </field-set>
+    </config>
+</part>

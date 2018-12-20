@@ -1,0 +1,6 @@
+<aside id="latestDiscussion"> 
+    <div class="comment" th:each="comment : ${ comments }">
+        <div class="name" th:text="${ comment.name}"> </div>
+        <p class="text" th:text="${ comment.text }"></p>
+    </div>
+</aside>

@@ -2,8 +2,11 @@
     <a href="#toplevelform">Post new comment</a>
     <div class="comments" th:replace="/site/parts/comment-field/comment-tree::nestedComment (${ discussion })"
         th:remove="tag"></div>
-    <form class="startDiscussion" id="toplevelform">
-        <input type="hidden" name="parent" />
+    <form class="startDiscussion" autocomplete="off" th:action="${ serviceUrl }">
+        <!--input type="hidden" name="parent" value=""/-->
+        <!--/* I'm really not a fan of exposing the current content to the user */-->
+        <input type="hidden" name="content" th:value="${ currentContent }"/>
+        
         <label>
             <h3>New comment</h3>
             <textarea name="comment"></textarea>

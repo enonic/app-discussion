@@ -1,5 +1,5 @@
 <div>
-    <div th:fragment="single (comment)" th:remove="tag">
+    <div th:fragment="single (comment, last)" th:remove="tag">
         <li>
             <div class="singleComment">
                 <div class="top">
@@ -9,7 +9,10 @@
                 </div>
                 <p class="text" th:text="${ comment.text }">test</p>
                 <div class="bottom">
-                    <button class="respond">reply</button>
+                    <!--/* Setting the parent attr to id so its becomes a child element */-->
+                    <button class="respond"
+                        th:if="${ last }"
+                        th:attr="data-parent=${ comment._id }">reply</button>
                 </div>
             </div>
         </li>
