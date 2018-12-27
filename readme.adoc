@@ -4,7 +4,7 @@
 This is to be combined with articles blogs or other content.
 Easiest to use with a template and content types.
 
-If you want to disable comments on a spesific part of your page add the *commentRemove* to your page xml. This wil stop the rendering of the comment fields.
+If you want to disable comments on a spesific part of your page add param *commentRemove* to your page xml. This wil stop the rendering of the comment fields.
 
 ## Install prosess:
 
