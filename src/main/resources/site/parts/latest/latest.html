@@ -1,6 +1,9 @@
-<aside id="latestDiscussion"> 
+<aside id="latestDiscussion">
     <div class="comment" th:each="comment : ${ comments }">
-        <div class="name" th:text="${ comment.name}"> </div>
-        <p class="text" th:text="${ comment.text }"></p>
+        <a th:href="${ comment.contentUrl }">
+            <b class="name" th:text="${ comment.userName }"></b>
+            <time class="time" th:text="${ comment.time }"></time>
+            <p class="text" th:text="${ comment.text }"></p>
+        </a>
     </div>
 </aside>

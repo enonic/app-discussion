@@ -3,16 +3,16 @@
         <li>
             <div class="singleComment">
                 <div class="top">
-                    <span class="name" th:text="${ comment.name }">
-                        Username</span>
+                    <span class="name" th:text="${ comment.userName }"></span>
                     <time class="time" th:text="${ comment.time }"></time>
+                    <button class="edit" th:attr="data-key=${ comment._id }" th:if="${ userId == comment.userId }">
+                        <div th:replace="/site/parts/comment-field/icon/icon_fragments::edit_icon ( '20px' )"></div>
+                    </button>
                 </div>
-                <p class="text" th:text="${ comment.text }">test</p>
+                <p class="text" th:text="${ comment.text }"></p>
                 <div class="bottom">
                     <!--/* Setting the parent attr to id so its becomes a child element */-->
-                    <button class="respond"
-                        th:if="${ last }"
-                        th:attr="data-parent=${ comment._id }">reply</button>
+                    <button class="respond" th:if="${ last }" th:text="${ locale.reply }" th:attr="data-parent=${ comment._id }">test</button>
                 </div>
             </div>
         </li>

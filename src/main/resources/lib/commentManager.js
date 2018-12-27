@@ -1,6 +1,7 @@
 var appersist = require('/lib/openxp/appersist');
 var contentLib = require('/lib/xp/content');
 var portal = require('/lib/xp/portal');
+var authLib = require('/lib/xp/auth');
 var tools = require('/lib/tools');
 
 exports.createComment = createComment;
@@ -8,13 +9,13 @@ exports.modifyComment = modifyComment;
 exports.getNodeData = getNodeData;
 exports.getComments = getComments;
 exports.getComment = getComment;
-exports.createTestComments = createTestComments;
+//exports.createTestComments = createTestComments;
 
 /**
  * Creates a new comment, assumes the current content is set.
  * @param {string} comment The comment of the new post 
  * @param {string} contentId The node id the comment is attached to
- * @param {String} [parent] Optional The parent node used as to set give a new child
+ * @param {String} [parent] The parent node used as to set give a new child
  * @param {RepoConnection} [connection] Used to spesify what repo to use
  * @returns {Object} Repo node created or Null if failure
  */
@@ -22,8 +23,8 @@ function createComment(comment, contentId, parent, connection) {
     connection = connection || appersist.repository.getConnection();
 
     //Check if content exists
-    var node = contentLib.get({ key: contentId });
-    if (!node) {
+    var currentContent = contentLib.get({ key: contentId });
+    if (!currentContent) {
         log.info("Got an contentId that does not exist");
         return null;
     } else if (!comment || comment.length === 0) {
@@ -31,13 +32,16 @@ function createComment(comment, contentId, parent, connection) {
         return null;
     }
 
+    var currentUser = authLib.getUser();
+
     var commentModel = {
         content: contentId,
         type: "comment",
         creationTime: new Date().toISOString(),
         data: {
             comment: portal.sanitizeHtml(comment),
-            userName: "test", //adsfGetuserName(),
+            userName: currentUser.displayName,
+            userId: currentUser.key,
         },
     };
 
@@ -52,41 +56,52 @@ function createComment(comment, contentId, parent, connection) {
         //Setting parentPath set nested
         commentModel._parentPath = parentNode._path;
         commentModel.parentId = parentNode._id;
-        node = connection.create(commentModel);
-
-    } else {
-        node = connection.create(commentModel);
     }
+    node = connection.create(commentModel);
+    //unsure if we should log all comments
+    //log.info("Created new comment"+node._id);
     return node;
 }
 
 /**
  * Used to set a new comment 
- * @param {String} id 
- * @param {Strin} comment 
- * @param {RepoConnection} [connection]
+ * @param {String} id Node repo id
+ * @param {String} comment The new comment to use
+ * @param {RepoConnection} [connection] Send in your own repo connection
  */
-function modifyComment(id, comment, connection) {
+function modifyComment(id, commentEdit, connection) {
     connection = connection || appersist.repository.getConnection();
+
+    //Check if users are the same.
+    var currentUserId = authLib.getUser().key;
+    var commentUser = connection.get(id).data.userId;
+
+    if (!commentUser) {
+        log.info("Could not find userId on comment");
+        return null;
+    }
+    else if (currentUserId !== commentUser) {
+        log.info("Current user is different from the author!");
+        return null;
+    }
 
     var result = connection.modify({
         key: id,
         editor: edit
     });
 
-    var newComment = comment;
-
     function edit(node) {
-
-        node.comment = newComment;
-
+        node.data.comment = portal.sanitizeHtml(commentEdit);
+        //log.info("Edited comment " + node._id);
         return node;
     }
 
     if (!result) {
         log.info("Could not change comment with id: " + id);
+        return null;
     }
-    tools.out(result);
+
+    return result;
 }
 
 /**
@@ -106,7 +121,6 @@ function setChildNode(collection, node) {
             }
             return true;
         } else if (typeof collection[j].children !== "undefined") {
-            tools.out(collection[j].children);
             var set = setChildNode(collection[j].children, node);
             //If we found in children return true.
             if (set) return set;
@@ -143,10 +157,11 @@ function addSorted(group, element) {
 function getNodeData(node) {
     return {
         _id: node._id,
-        name: portal.sanitizeHtml(node.data.userName), //https://xkcd.com/327/
+        userName: portal.sanitizeHtml(node.data.userName), //https://xkcd.com/327/
         text: portal.sanitizeHtml(node.data.comment),
         creationTime: node.creationTime,
         time: formatDate(node.creationTime),
+        userId: node.data.userId,
     };
 }
 
@@ -164,8 +179,26 @@ function getComments(contentId, connection) {
     var result = connection.query({
         start: 0,
         count: 500,
+        sort: "creationTime ASC",
         query: "type='comment' AND content='" + contentId + "'",
-        branch: "master",
+        filters: {
+            boolean: {
+                must: [
+                    {
+                        exists: {
+                            field: "type",
+                            values: ["comment"],
+                        }
+                    },
+                    {
+                        exists: {
+                            field: "content",
+                            values: [contentId]
+                        }
+                    }
+                ],
+            },
+        },
     });
 
     //Array of objects with nested object.
@@ -182,7 +215,7 @@ function getComments(contentId, connection) {
             addSorted(comments, node);
         }
     }
-    
+
     return comments;
 }
 
@@ -197,20 +230,20 @@ function getComment(commentId, connection) {
     return connection.get({ keys: commentId });
 }
 
-//Create test Comments is used for testing only.
-function createTestComments(connection) {
+//Debugging development method only
+/*function createTestComments(connection) {
     var node = createComment(connection, "Lorem ipsum");
     createComment(connection, "This is a lot of text right2");
     //createComment(connection, "This is a lot of text right3");
     //createComment(connection, "This is a lot of text right4");
     var node2 = createComment(connection, "This is a lot of text right1.1", node._id);
-    /*createComment(connection, "This is a lot of text right1.2", node._id);
+    createComment(connection, "This is a lot of text right1.2", node._id);
     createComment(connection, "This is a lot of text right1.3", node._id);
     createComment(connection, "This is a lot of text right1.4", node._id);
     createComment(connection, "This is a lot of text right1.5", node._id);
     var node3 = createComment(connection, "Lorem ipsum with text1.1.1", node2._id);
-    createComment(connection, "Lorem ipsum with text1.1.2", node2._id);*/
-}
+    createComment(connection, "Lorem ipsum with text1.1.2", node2._id);
+}*/
 
 function formatDate(isoString) {
     var time = new Date(isoString);

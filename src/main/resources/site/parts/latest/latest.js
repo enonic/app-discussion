@@ -1,5 +1,6 @@
 var thymeleaf = require("/lib/xp/thymeleaf");
 var commentLib = require("/lib/commentManager");
+var contentLib = require("/lib/xp/content");
 var appersist = require('/lib/openxp/appersist');
 var portal = require('/lib/xp/portal');
 var tools = require('/lib/tools');
@@ -11,28 +12,44 @@ exports.get = function(req) {
 
     var connection = appersist.repository.getConnection();
 
-    //query the 5 latet comments here
+    //query the latest comments here
     var result = connection.query({
         start: 0,
         count: size,
-        query: "type='comment'",
-        sort: 'creationDate ASC',
+        query: "",
+        sort: 'creationTime DESC',
         branch: "master",
+        filters: {
+            boolean: {
+                must: [
+                    {
+                        exists: {
+                            field: "type",
+                            values: ["comment"],
+                        }
+                    },
+                    {
+                        exists: {
+                            field: "content",
+                        }
+                    }
+                ],
+            },
+        },
     });
 
     var comments = [];
 
     for (var i=0; i<result.hits.length; i++) {
         var commentId = result.hits[i].id;
-        comments.push(commentLib.getNodeData(connection.get( commentId )));
+        var node = connection.get(commentId);
+        comments[i] = commentLib.getNodeData(node);
+        comments[i].contentUrl = portal.pageUrl({ id: node.content });
     }
 
     var model = {
         comments: comments,
     };
-
-    //todo add link to the given comment
-    tools.out(comments);
 
     var view = resolve("latest.html");
 

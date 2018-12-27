@@ -1,36 +1,136 @@
+//var submitCallback = handleSubmit.apply(insertComment);
 $(".startDiscussion").submit(handleSubmit);
 
+var discussion = {
+    comment: $('<li><div class="singleComment">' +
+        '<div class="top">' +
+        '<span class="name"></span>' +
+        '<time class="time"></time>' +
+        '</div>' +
+        '<p class="text"></p>' +
+        '<div class="bottom">' +
+        '</div>' +
+        '</div></li>'),
+    form: $(".startDiscussion").first().clone(),
+};
+
+//Submit action on the form elements
 function handleSubmit(event) {
 
     var form = $(this);
     var url = form.attr('action');
 
-    console.log(url);
-
-    //add parent hidden input on reply
-    //$("<input></input>");
-    //attr(name="parent");
-    //attr/value="other");
-
     $.ajax({
-        type: "POST",
+        method: "POST",
         url: url,
         data: form.serialize(), // serializes the form's elements.
-        success: function (data) {
-            console.log("success " + data);
-        },
-        failure: function (data) {
-            $(this).addClass("discussError");
-            console.log("Error could not submit form");
-            console.log(data);
+        datatype: "application/json",
+    }).done(function (data) {
+        if (data) {
+            console.log("posted new comment");
+            insertComment(form, data);
+        } else {
+            console.log("Unexpected server response " + data);
         }
+    }).fail(function (data) {
+        console.log("Error could not submit form ", data);
+        $(this).prepend("<div class='error'>Error could not submit comment</div>");
     });
 
     event.preventDefault(); // avoid to execute the actual submit of the form.
 }
 
+//Handle the different comment types: Reply, modify and type
+function insertComment(form, data) {
+    var type = form.data("type");
+
+    if (type) {
+        createComment(form, data, type);
+    }
+    else {
+        createComment(form, data, "top");
+    }
+}
+
+//Create a "fake" comment so it looks like they posted it
+function createComment(form, jsonResponse, type) {
+    var postData = jsonResponse.data;
+    form.siblings(".respond").trigger("click"); //Cheat way to show hide reply field
+
+    var singleComment = discussion.comment.clone();
+
+    singleComment.find(".text").text(postData.text);
+    var userName = postData.userName;
+    singleComment.find(".name").text(userName);
+    singleComment.find(".time").text(postData.time);
+    //singleComment.find('.bottom').html('<button class="respond">reply</button>');
+
+    if (type === "reply") {
+        var listItem = form.closest("li");
+        var childList = listItem.next();
+
+        if (childList.is("ol")) {
+            childList.append(singleComment);
+        } else {
+            var commentContainer = $("<ol></ol>");
+            commentContainer.append(singleComment);
+            listItem.after(commentContainer);
+        }
+    }
+    else if (type === "modify") {
+        var comment = form.siblings(".text");
+        comment.text(postData.text);
+        comment.css("display", "");
+        form.remove();
+
+    }
+    else if (type === "top") {
+        $(".top-level").append(singleComment);
+    }
+}
+
+//Handle all edit/modify a comment
+$('.singleComment .edit').click(function (event) {
+    var edit = $(this);
+    var id = edit.data("key");
+    var oldComment = edit.parent().siblings(".text").text();
+
+    var form;
+    var formCheck = edit.parent().next();
+    if (formCheck.is("form")) {
+        form = formCheck;
+    } else {
+        form = discussion.form.clone();
+    }
+
+    var show = edit.data("show");
+    if (show === undefined) {
+        form.data("type", "modify");
+        //I would prefer adding properties to the json ajax object directly.
+        //form.find(".headline").text("Edit comment");
+        form.find(".headline").remove();
+        form.css("marginLeft", "70px");
+        form.find(".createComment").text(oldComment + "");
+        form.prepend("<input type='hidden' name='modify' value='true'/>");
+        form.prepend("<input type='hidden' name='id' value='" + id + "' />");
+        form.submit(handleSubmit);
+
+        edit.data("exist", true);
+
+        edit.parent().siblings(".text").css("display", "none");
+
+        edit.parent().after(form);
+    }
+    else {
+        form.remove();
+        edit.removeData("exist");
+    }
 
 
+    event.preventDefault();
+});
+
+//Handle reply on comments
 $('.singleComment .respond').click(function (event) {
     var respond = $(this);
     var show = respond.data("showForm");
@@ -41,11 +141,11 @@ $('.singleComment .respond').click(function (event) {
         respond.data("showForm", "hide");
     } else {
         //Check if it has the form under it or not
-        
+
         if (form.length == 0) {
             var parent = respond.data("parent");
 
-            var newForm = $(".startDiscussion").first().clone();
+            var newForm = discussion.form.clone();
             newForm.prepend("<input type='hidden' name='parent' value='" + parent + "' />");
             newForm.submit(handleSubmit);
             form = newForm;
@@ -53,9 +153,9 @@ $('.singleComment .respond').click(function (event) {
         }
 
         form.css("display", "");
+        form.data("type", "reply");
         respond.data("showForm", "show");
     }
-
 
     event.preventDefault(); //*shrug* Button could do strange things
 });

@@ -1,16 +1,15 @@
 <section id="discussion" th:if="${ render }">
-    <a href="#toplevelform">Post new comment</a>
     <div class="comments" th:replace="/site/parts/comment-field/comment-tree::nestedComment (${ discussion })"
         th:remove="tag"></div>
     <form class="startDiscussion" autocomplete="off" th:action="${ serviceUrl }">
-        <!--input type="hidden" name="parent" value=""/-->
         <!--/* I'm really not a fan of exposing the current content to the user */-->
-        <input type="hidden" name="content" th:value="${ currentContent }"/>
-        
-        <label>
-            <h3>New comment</h3>
-            <textarea name="comment"></textarea>
-        </label>
-        <input class="formSub" type="submit" value="Post comment" />
+        <input type="hidden" name="content" th:value="${ currentContent }" />
+
+        <h3 class="headline" th:text="${ locale.newComment }">Post title</h3>
+        <div data-th-text="${ language }"></div>
+        <textarea class="createComment" autocomplete="off" name="comment"></textarea>
+        <input class="formSub" type="submit" th:value="${ locale.post }" />
     </form>
 </section>
+
+<!--/* th:text="${ portal.localize({'_key=newComment','_locale='+language })}" */-->

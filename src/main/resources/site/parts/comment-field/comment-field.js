@@ -1,17 +1,32 @@
 var portal = require("/lib/xp/portal");
 var contentLib = require("/lib/xp/content");
 var thymeleaf = require("/lib/xp/thymeleaf");
-var tool = require("/lib/tools");
+var tools = require("/lib/tools");
 var commentLib = require("/lib/commentManager");
+var auth = require("/lib/xp/auth");
+
+var i18nLib = require('/lib/xp/i18n');
 
 //TODO rename comment-field to something better 
 exports.get = function () {
-    //connect to repo: app.name and its master branch.
-    //var repoConnection = appersist.repository.getConnection();
     var content = portal.getContent();
-
-    //createTestComments(repoConnection);
+        
     var discussion = commentLib.getComments(content._id);
+    
+    var locale = {
+        reply: i18nLib.localize({
+            key: "replyMessage",
+            locale: content.language,
+        }),
+        newComment: i18nLib.localize({
+            key: "newComment",
+            locale: content.language,
+        }),
+        post: i18nLib.localize({
+            key: "post",
+            locale: content.language,
+        }),
+    };
 
     var model = {
         discussion: discussion,
@@ -19,7 +34,10 @@ exports.get = function () {
         serviceUrl: portal.serviceUrl({
             service: "communication",
         }),
+        userId: auth.getUser().key,
+        locale: locale,
     };
+
 
     model.render = true;
     if (content.data.commentRemove) {
