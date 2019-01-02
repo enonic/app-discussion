@@ -109,7 +109,6 @@ $('.singleComment .edit').click(function (event) {
         //I would prefer adding properties to the json ajax object directly.
         //form.find(".headline").text("Edit comment");
         form.find(".headline").remove();
-        form.css("marginLeft", "70px");
         form.find(".createComment").text(oldComment + "");
         form.prepend("<input type='hidden' name='modify' value='true'/>");
         form.prepend("<input type='hidden' name='id' value='" + id + "' />");
