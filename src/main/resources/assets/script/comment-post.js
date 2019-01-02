@@ -34,7 +34,7 @@ function handleSubmit(event) {
         }
     }).fail(function (data) {
         console.log("Error could not submit form ", data);
-        $(this).prepend("<div class='error'>Error could not submit comment</div>");
+        form.prepend("<div class='error'>Error could not submit comment</div>");
     });
 
     event.preventDefault(); // avoid to execute the actual submit of the form.
