@@ -1,18 +1,18 @@
 var portal = require("/lib/xp/portal");
 var contentLib = require("/lib/xp/content");
-var thymeleaf = require("/lib/xp/thymeleaf");
+var thymeleaf = require("/lib/thymeleaf");
 var tools = require("/lib/tools");
 var commentLib = require("/lib/commentManager");
 var auth = require("/lib/xp/auth");
 
 var i18nLib = require('/lib/xp/i18n');
 
-//TODO rename comment-field to something better 
+//TODO rename comment-field to something better
 exports.get = function () {
     var content = portal.getContent();
-        
+
     var discussion = commentLib.getComments(content._id);
-    
+
     var locale = {
         reply: i18nLib.localize({
             key: "replyMessage",
