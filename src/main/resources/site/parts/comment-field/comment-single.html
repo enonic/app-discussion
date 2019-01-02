@@ -6,7 +6,7 @@
                     <span class="name" th:text="${ comment.userName }"></span>
                     <time class="time" th:text="${ comment.time }"></time>
                     <button class="edit" th:attr="data-key=${ comment._id }" th:if="${ userId == comment.userId }">
-                        <div th:replace="/site/parts/comment-field/icon/icon_fragments::edit_icon ( '20px' )"></div>
+                        <div th:replace="/site/parts/comment-field/svgicon/icon_fragments::edit_icon ( '20px' )"></div>
                     </button>
                 </div>
                 <p class="text" th:text="${ comment.text }"></p>
