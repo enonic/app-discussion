@@ -6,6 +6,9 @@ Easiest to use with a template and content types.
 
 If you want to disable comments on a spesific part of your page add param *commentRemove* to your page xml. This wil stop the rendering of the comment fields.
 
+When using this app you will need to add your own styling to the application.  
+link:style.adoc[Style documentation]
+
 ## Install prosess:
 
 Local build:

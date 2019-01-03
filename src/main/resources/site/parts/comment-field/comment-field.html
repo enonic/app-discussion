@@ -6,7 +6,6 @@
         <input type="hidden" name="content" th:value="${ currentContent }" />
 
         <h3 class="headline" th:text="${ locale.newComment }">Post title</h3>
-        <div data-th-text="${ language }"></div>
         <textarea class="createComment" autocomplete="off" name="comment"></textarea>
         <input class="formSub" type="submit" th:value="${ locale.post }" />
     </form>
