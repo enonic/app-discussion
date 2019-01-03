@@ -4,7 +4,7 @@
 
 == Part styles
 
-=== Comment-field
+== Comment-field
 
 Html markup
 
@@ -50,7 +50,7 @@ Css example:
 ----
 
 
-==== Structure
+=== Structure
 
 The comments are structured like a tree so each comment child comments (Replies). + 
 Top level is the root elements and will always render even if there are no comments to list. + 
@@ -88,7 +88,7 @@ Example of a 3 level deep structure:
 </ol>
 ----
 
-===== Single comment
+=== Single comment
 
 Each comment is a div. With a elements representing the name, time and also a reply button. + 
 
@@ -112,7 +112,7 @@ Markup:
 </div>
 ----
 
-====== Edit icon (svg) 
+==== Edit icon (svg) 
 
 The edit button has its own markup, and more importantly should be styled with css.
 
@@ -147,7 +147,7 @@ Top icon is with styling, Bottom one does not have any.
 
 image::edit_icon_example.png[Two pen icons, top one being styles, bottom one not]
 
-===== Form
+=== Form
 There are 3 types of forms: posting a new comment, replying to a comment and editing a comment.
 
 The markup is the same for all elements:
@@ -163,13 +163,13 @@ The markup is the same for all elements:
 </form>
 ----
 
-===== Errors 
+=== Errors 
 When there is a failure of some kind with posting/editing a comment there is a small error message. +
 The message is put in the top of the form posting it:
 
 `<div class='error'>Error could not submit comment</div>`
 
-=== latest-part
+== latest-part
 
 The latest part shows the latest comments. + 
 How many comments that are shown is a setting on the part. (default 5)
