@@ -10,39 +10,38 @@ Html markup
 
 [source, html]
 ----
-    <section id="discussion">
-        <ol class="top-level">
-            <li>
-                <div class="singleComment">
-                    <div class="top">
-                        <span class="name">Super User</span>
-                        <time class="time">11:01 02/01/2019</time>
-                        <button class="edit" data-key="repo-key">
-                            <svg ...icon ></svg>
-                        </button>
-                    </div>
-                    <p class="text">Lots and lots of text go here</p>
-                    <div class="bottom">
-                        <button class="respond" data-parent="repo-key">svar</button>
-                    </div>
+<section id="discussion">
+    <ol class="top-level">
+        <li>
+            <div class="singleComment">
+                <div class="top">
+                    <span class="name">Super User</span>
+                    <time class="time">11:01 02/01/2019</time>
+                    <button class="edit" data-key="repo-key">
+                        <svg ...icon ></svg>
+                    </button>
                 </div>
-            </li>
-        </ol>
-        <form class="startDiscussion" autocomplete="off" action="...">
-            <input type="hidden" name="content" value="repo-key">
+                <p class="text">Lots and lots of text go here</p>
+                <div class="bottom">
+                    <button class="respond" data-parent="repo-key">svar</button>
+                </div>
+            </div>
+        </li>
+    </ol>
+    <form class="startDiscussion" autocomplete="off" action="...">
+        <input type="hidden" name="content" value="repo-key">
 
-            <h3 class="headline">Ny kommentar</h3>
-            <textarea class="createComment" autocomplete="off" name="comment"></textarea>
-            <input class="formSub" type="submit" value="send">
-        </form>
-    </section>
+        <h3 class="headline">Ny kommentar</h3>
+        <textarea class="createComment" autocomplete="off" name="comment"></textarea>
+        <input class="formSub" type="submit" value="send">
+    </form>
+</section>
 ----
 
-The comment field has set the id discussion. This hook lets you apply changes to only things in this app.
+The comment field id is `discussion`. This hook lets you apply changes to only things in this app. +
+`<section class="discussion">` + 
 
-
-`<section class="discussion">`
-Css is only an example:
+Css example:
 [source, css]
 ----
 #discussion .singleComment {
@@ -96,7 +95,7 @@ Each comment is a div. With a elements representing the name, time and also a re
 *The edit button is only shown if you are the author of a comment*
 
 Markup:
-
+[source, html]
 ----
 <div class="singleComment">
     <div class="top">
@@ -121,34 +120,18 @@ The edit button has its own markup, and more importantly should be styled with c
 ----
 <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 100 100" version="1.1">
   <g transform="translate(0,-197)">
-    <path class="around" style="opacity:1;vector-effect:none;fill-opacity:1;stroke:#000000;stroke-width:5;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke" d="[...]"></path>
-    <path class="highlight" style="fill-opacity:1;stroke:#000000;stroke-width:0.31990716px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" d="[...]"></path>
+    <path class="around" 
+    style="opacity:1;vector-effect:none;fill-opacity:1;stroke:#000000;stroke-width:5;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke" d="[...]"></path>
+    <path class="pen" 
+    style="fill-opacity:1;stroke:#000000;stroke-width:0.31990716px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" d="[...]"></path>
+    <path class="highlight" 
+    style="fill-opacity:1;stroke:#000000;stroke-width:0.31990716px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" d="[...]"></path>
   </g>
 </svg>
 ----
 
-Example of css:
-[source, css]
-----
-#discussion .singleComment .edit:hover {
-  background-color: darkgray;
-}
 
-#discussion .singleComment .edit svg .highlight {
-  fill: white;
-}
-
-#discussion .singleComment .edit svg .pen {
-  fill: black;
-}
-
-#discussion .singleComment .edit svg .around {
-  stroke: black;
-  fill: white;
-}
-----
-
-*The quickest way to make the edit button look decent is adding this:*
+Example css: +
 [source, css]
 ----
 #discussion svg .highlight {
@@ -160,10 +143,51 @@ Example of css:
 ----
 
 Result: +
+Top icon is with styling, Bottom one does not have any.
 
 image::edit_icon_example.png[Two pen icons, top one being styles, bottom one not]
 
+===== Form
+There are 3 types of forms: posting a new comment, replying to a comment and editing a comment.
+
+The markup is the same for all elements:
+
+[source, html]
+----
+<form class="startDiscussion" autocomplete="off">
+    <input type="hidden" name="content"/>
+
+    <h3 class="headline">new comment</h3>
+    <textarea class="createComment" autocomplete="off" name="comment"></textarea>
+    <input class="formSub" type="submit" />
+</form>
+----
+
+===== Errors 
+When there is a failure of some kind with posting/editing a comment there is a small error message. +
+The message is put in the top of the form posting it:
+
+`<div class='error'>Error could not submit comment</div>`
 
 === latest-part
 
-Lets try this out!
+The latest part shows the latest comments. + 
+How many comments that are shown is a setting on the part. (default 5)
+
+Markup:
+[source, html]
+----
+<aside id="latestDiscussion">
+    <div class="comment">
+        <a href="[Link to comment page]">
+            <b class="name"></b>
+            <time class="time"></time>
+            <p class="text"></p>
+        </a>
+    </div>
+    [Next comment]
+</aside>
+----
+
+The comments have a name, time and text field. +
+The id hook for this part is "LatestDiscussion".

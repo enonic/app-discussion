@@ -4,10 +4,15 @@
 This is to be combined with articles blogs or other content.
 Easiest to use with a template and content types.
 
+When using this app you will need to add your own styling to the application.  +
+link:style.adoc[Style documentation]
+
 If you want to disable comments on a spesific part of your page add param *commentRemove* to your page xml. This wil stop the rendering of the comment fields.
 
-When using this app you will need to add your own styling to the application.  
-link:style.adoc[Style documentation]
+### Language 
+There are currently two supported languages Norwegian, and English. +
+You can change the language used by setting the language on a page in content studio. The app looks for this.  +
+Note* The codes `en` and `no` are suported. Not `en-GB` or `nn-NO`. 
 
 ## Install prosess:
 
@@ -22,7 +27,7 @@ Remote server:
  then uploaded the generated .jar file to your server. +
  The yar file can be found in your hom directory. (Default deploy folder is Path to server /home) +
 
-Later this app might be uploaded to the enonic market +
+Later the app will be uploaded to the enonic market +
 then you can downloud it from the admin applications interface in XP.
 
 -- Created by Persijn Kwekkeboom --
