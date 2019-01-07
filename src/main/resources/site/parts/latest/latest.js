@@ -8,7 +8,7 @@ var i18n = require('/lib/xp/i18n');
 
 exports.get = function(req) {
     var content = portal.getComponent();
-    
+
     var size = content.config.size;
     var headline = content.config.headline;
 
