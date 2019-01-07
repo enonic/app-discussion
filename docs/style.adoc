@@ -178,16 +178,22 @@ Markup:
 [source, html]
 ----
 <aside id="latestDiscussion">
+    <h3>[optional headline]</h3>
     <div class="comment">
-        <a href="[Link to comment page]">
-            <b class="name"></b>
-            <time class="time"></time>
-            <p class="text"></p>
-        </a>
+        <b class="name"></b>
+        <time class="time"></time>
+        <q class="text"></q>
+        <span>on 
+            <a href="[Link to comment page]">[contentDisplayname]</a>
+        </span>
     </div>
     [Next comment]
 </aside>
 ----
 
+The headline has a optional headline (Part setting)+
+
 The comments have a name, time and text field. +
-The id hook for this part is "LatestDiscussion".
+The id hook for this part is "LatestDiscussion". +
+Quotes are added to the text element since its a referenace to an element. +
+The a link has a text that shows the display name of the content linked to. +

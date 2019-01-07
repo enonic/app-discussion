@@ -48,6 +48,7 @@ exports.get = function(req) {
         comments[i] = commentLib.getNodeData(node);
         comments[i].contentUrl = portal.pageUrl({ id: node.content });
         comments[i].contentName = contentLib.get({ key: node.content }).displayName;
+        comments[i].text = portal.sanitizeHtml(comments[i].text);
     }
 
     var on = i18n.localize({

@@ -7,7 +7,14 @@ Easiest to use with a template and content types.
 When using this app you will need to add your own styling to the application.  +
 link:docs/style.adoc[Style documentation]
 
-If you want to disable comments on a spesific part of your page add param *commentRemove* to your page xml. This wil stop the rendering of the comment fields.
+### Comment field
+If you want to disable comments on a spesific part of your page add param *commentRemove* to your page xml. +
+This wil stop the rendering of the comment fields.
+
+### Latest part
+Configuration: +
+Headline: Ignored if empty, and will show at the top of the comment +
+Size: How many comments should be shown in the latest part. +
 
 ### Language 
 There are currently two supported languages Norwegian, and English. +
