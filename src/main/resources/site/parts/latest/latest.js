@@ -1,4 +1,4 @@
-var thymeleaf = require("/lib/xp/thymeleaf");
+var thymeleaf = require("/lib/thymeleaf");
 var commentLib = require("/lib/commentManager");
 var contentLib = require("/lib/xp/content");
 var appersist = require('/lib/openxp/appersist');
@@ -7,7 +7,7 @@ var tools = require('/lib/tools');
 
 exports.get = function(req) {
     var content = portal.getComponent();
-    
+
     var size = content.config.size;
 
     var connection = appersist.repository.getConnection();
