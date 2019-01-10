@@ -1,4 +1,6 @@
 plugins {
+    id 'maven'
+    id 'com.enonic.defaults' version '1.0.3'
     id 'com.enonic.xp.app' version '1.2.0'
 }
 
@@ -19,13 +21,6 @@ dependencies {
 
 	 include 'com.enonic.lib:lib-thymeleaf:1.0.1'
     include 'openxp.lib:appersist:1.0.0'
-
-    //Might use later
-    //include "com.enonic.xp:lib-i18n:${xpVersion}"
-    //include "com.enonic.xp:lib-auth:${xpVersion}"
-    //include "com.enonic.xp:lib-context:${xpVersion}"
-    //include "com.enonic.xp:lib-mail:${xpVersion}"
-    //include "com.enonic.xp:lib-repo:${xpVersion}"
 }
 
 repositories {
