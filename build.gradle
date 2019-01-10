@@ -23,6 +23,13 @@ dependencies {
     include 'openxp.lib:appersist:1.0.0'
 }
 
+//──────────────────────────────────────────────────────────────────────────────
+// Gradle wrapper
+//──────────────────────────────────────────────────────────────────────────────
+wrapper {
+	gradleVersion = '4.10.2'
+}
+
 repositories {
     maven {
         url 'https://dl.bintray.com/openxp/public'
