@@ -4,30 +4,36 @@ var thymeleaf = require("/lib/thymeleaf");
 var tools = require("/lib/tools");
 var commentLib = require("/lib/commentManager");
 var auth = require("/lib/xp/auth");
-
+var adminLib = require('/lib/xp/admin');
 var i18nLib = require('/lib/xp/i18n');
 
 //TODO rename comment-field to something better
-exports.get = function () {
-    var content = portal.getContent();
+exports.get = function (ref) {
+    var portalContent = portal.getContent();
 
-    var discussion = commentLib.getComments(content._id);
+    var content = contentLib.get({key: portalContent._id});
+    var langCode = content.language;
+
+    //Lang code is wrongly formated (sometimes)
+    langCode = langCode ? langCode.replace(/_/g, '-') : "";
+
+    var discussion = commentLib.getComments(portalContent._id);
 
     var locale = {
         reply: i18nLib.localize({
             key: "replyMessage",
-            locale: content.language,
+            locale: langCode,
         }),
         newComment: i18nLib.localize({
             key: "newComment",
-            locale: content.language,
+            locale: langCode,
         }),
         post: i18nLib.localize({
             key: "post",
-            locale: content.language,
+            locale: langCode,
         }),
     };
-
+        
     var model = {
         discussion: discussion,
         currentContent: content._id,

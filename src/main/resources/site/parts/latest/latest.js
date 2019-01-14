@@ -6,11 +6,17 @@ var portal = require('/lib/xp/portal');
 var tools = require('/lib/tools');
 var i18n = require('/lib/xp/i18n');
 
-exports.get = function(req) {
+exports.get = function (req) {
     var content = portal.getComponent();
+
+    var siteContent = portal.getContent();
 
     var size = content.config.size;
     var headline = content.config.headline;
+    var langCode = siteContent.language;
+
+    if (langCode)
+        langCode = langCode.replace(/_/g, '-'); //replace all underscore with dash
 
     var connection = appersist.repository.getConnection();
 
@@ -42,9 +48,16 @@ exports.get = function(req) {
 
     var comments = [];
 
-    for (var i=0; i<result.hits.length; i++) {
+    for (var i = 0; i < result.hits.length; i++) {
         var commentId = result.hits[i].id;
         var node = connection.get(commentId);
+
+        var nodeContext = contentLib.get({ key: node.content });
+        //If content is deleted we cant use it.
+        if (!nodeContext) { 
+            comments[i] = null;
+            break;
+        }
         comments[i] = commentLib.getNodeData(node);
         comments[i].contentUrl = portal.pageUrl({ id: node.content });
         comments[i].contentName = contentLib.get({ key: node.content }).displayName;
@@ -53,7 +66,7 @@ exports.get = function(req) {
 
     var on = i18n.localize({
         key: "on",
-        local: content.language,
+        local: langCode,
     });
 
     var model = {

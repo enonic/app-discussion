@@ -17,7 +17,7 @@ dependencies {
     include "com.enonic.xp:lib-portal:${xpVersion}"
     include "com.enonic.xp:lib-admin:${xpVersion}"
 
-	 include 'com.enonic.lib:lib-thymeleaf:1.0.1'
+	include 'com.enonic.lib:lib-thymeleaf:1.0.1'
     include 'openxp.lib:appersist:1.0.0'
 
     //Might use later
