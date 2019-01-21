@@ -77,7 +77,17 @@ exports.get = function (req) {
 
     var view = resolve("latest.html");
 
+    var addition = [];
+    var siteConfig = portal.getSiteConfig();
+
+    if (siteConfig.defaultStyle) {
+        addition.push("<link rel='stylesheet' href='"+ portal.assetUrl({ path: "css/default.css" }) + "'/>");
+    }
+
     return {
         body: thymeleaf.render(view, model),
+        pageContributions: {
+            headEnd: addition,
+        }
     };
 };
