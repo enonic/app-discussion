@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-  <config/>
+  <config>
+    <input type="CheckBox" name="defaultStyle">
+      <label>Use default style</label>
+      <occurrences minimum="0" maximum="1"/>
+      <default>checked</default>
+      <help-text>If you have your own styling turn this off</help-text>
+      <occurrences minimum="1" maximum="1"/>
+    </input>
+  </config>
 </site>

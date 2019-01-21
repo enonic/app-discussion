@@ -52,12 +52,22 @@ exports.get = function (ref) {
 
     var view = resolve("comment-field.html");
 
+    var addition = [
+        "<script src='" + portal.assetUrl({ path: "script/lib/jquery-3.3.1.min.js" }) + "'></script>",
+    ];
+
+    var siteConfig = portal.getSiteConfig();
+
+    // log.info(JSON.stringify(siteConfig, null, 2));
+
+    if (siteConfig.defaultStyle) {
+        addition.push("<link rel='stylesheet' href='"+ portal.assetUrl({ path: "css/default.css" }) + "'/>");
+    }
+
     return {
         body: thymeleaf.render(view, model),
         pageContributions: {
-            headEnd: [
-                "<script src='" + portal.assetUrl({ path: "script/lib/jquery-3.3.1.min.js" }) + "'></script>",
-            ],
+            headEnd: addition,
             bodyEnd: [
                 "<script src='" + portal.assetUrl({ path: "script/comment-post.js" }) + "'></script>",
             ]

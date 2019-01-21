@@ -1,5 +1,5 @@
 <section id="discussion" th:if="${ render }">
-    <div class="comments" th:replace="/site/parts/comment-field/comment-tree::nestedComment (${ discussion })"
+    <div th:replace="/site/parts/comment-field/comment-tree::nestedComment (${ discussion })"
         th:remove="tag"></div>
     <form class="startDiscussion" autocomplete="off" th:action="${ serviceUrl }">
         <!--/* I'm really not a fan of exposing the current content to the user */-->
@@ -10,5 +10,3 @@
         <input class="formSub" type="submit" th:value="${ locale.post }" />
     </form>
 </section>
-
-<!--/* th:text="${ portal.localize({'_key=newComment','_locale='+language })}" */-->
