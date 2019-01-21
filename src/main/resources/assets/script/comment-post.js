@@ -4,7 +4,7 @@ $(".startDiscussion").submit(handleSubmit);
 var discussion = {
     comment: $('<li><div class="singleComment">' +
         '<div class="top">' +
-        '<span class="name"></span>' +
+        '<span class="name"></span>\n' +
         '<time class="time"></time>' +
         '</div>' +
         '<p class="text"></p>' +
