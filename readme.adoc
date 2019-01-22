@@ -4,8 +4,8 @@
 This is to be combined with articles blogs or other content.
 Easiest to use with a template and content types.
 
-When using this app you will need to add your own styling to the application.  +
-link:docs/style.adoc[Style documentation]
+The application has defalt styling (css), this can be turned off in the application configuration on your site in content studio. +
+If you want to style the discussion app your self take a look at the link:docs/style.adoc[Style documentation]
 
 ### Comment field
 If you want to disable comments on a spesific part of your page add param *commentRemove* to your page xml. +
@@ -18,23 +18,22 @@ Size: How many comments should be shown in the latest part. +
 
 ### Language 
 There are currently two supported languages Norwegian, and English. +
-You can change the language used by setting the language on a page in content studio. The app looks for this.  +
-Note* The codes `en` and `no` are suported. Not `en-GB` or `nn-NO`. 
+You can change the language used by setting the language on a the your site in content studio. +
 
-## Install prosess:
+## Market
 
-Local build:
+The application should be on the enonic market. +
+So you can browser XP applications tab and install it from the UI.
 
-* Deploy it using gradle wrapper `gradlew deploy` +
-this deploys it to your current home folder, and server.
+## Manual installation
 
-Remote server:
+If you want to install the application yourself build it with: + 
 
- * Build it with the gradle wrapper `gradlew deploy` + 
- then uploaded the generated .jar file to your server. +
- The yar file can be found in your hom directory. (Default deploy folder is Path to server /home) +
+    gradlew build 
 
-Later the app will be uploaded to the enonic market +
-then you can downloud it from the admin applications interface in XP.
+The jar file is located in `build/libs/discussion-vX.X.X.jar`. +
+You can upload this in the server home folder or in the applications tab in enonic xp.
 
--- Created by Persijn Kwekkeboom --
+
+
+-- Created by Persijn Kwekkeboom pkw@enonic.com --
