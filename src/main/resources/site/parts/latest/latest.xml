@@ -1,6 +1,6 @@
 <part>
     <display-name>Latest comments</display-name>
-    <config>
+    <form>
         <field-set name="things">
             <label>Latest comments</label>
             <items>
@@ -19,5 +19,5 @@
                 </input>
             </items>
         </field-set>
-    </config>
+    </form>
 </part>

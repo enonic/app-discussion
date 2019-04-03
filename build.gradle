@@ -1,7 +1,7 @@
 plugins {
-    id 'maven'
-    id 'com.enonic.defaults' version '1.0.3'
-    id 'com.enonic.xp.app' version '1.2.0'
+    id 'com.enonic.defaults' version '2.0.1'
+    id 'com.enonic.xp.app' version '2.0.0'
+    id 'maven-publish'
 }
 
 app {
@@ -20,15 +20,8 @@ dependencies {
     //include "com.enonic.xp:lib-admin:${xpVersion}"
     include "com.enonic.xp:lib-i18n:${xpVersion}"
 
-	include 'com.enonic.lib:lib-thymeleaf:1.0.1'
+    include "com.enonic.lib:lib-thymeleaf:2.0.0-B1"
     include 'openxp.lib:appersist:1.0.0'
-}
-
-//──────────────────────────────────────────────────────────────────────────────
-// Gradle wrapper
-//──────────────────────────────────────────────────────────────────────────────
-wrapper {
-	gradleVersion = '4.10.2'
 }
 
 repositories {
