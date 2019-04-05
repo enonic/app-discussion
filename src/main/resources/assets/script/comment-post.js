@@ -1,23 +1,104 @@
-//var submitCallback = handleSubmit.apply(insertComment);
-$(".startDiscussion").submit(handleSubmit);
+/*Document ready*/
+$(function () {
+    window.discussion = {
+        comment: $('<li><div class="singleComment">' +
+            '<div class="top">' +
+            '<span class="name"></span>\n' +
+            '<time class="time"></time>' +
+            '</div>' +
+            '<p class="text"></p>' +
+            '<div class="bottom">' +
+            '</div>' +
+            '</div></li>'),
+        form: $(".startDiscussion").first().clone(),
+    };
+    
+    //Adding events on document ready
+    $(".startDiscussion").submit(function (event) {
+        var form = $(this);
+        sendForm(form);
+        event.preventDefault();
+    });
 
-var discussion = {
-    comment: $('<li><div class="singleComment">' +
-        '<div class="top">' +
-        '<span class="name"></span>\n' +
-        '<time class="time"></time>' +
-        '</div>' +
-        '<p class="text"></p>' +
-        '<div class="bottom">' +
-        '</div>' +
-        '</div></li>'),
-    form: $(".startDiscussion").first().clone(),
-};
+    $('.singleComment .edit').click(function (event) {
+        var edit = $(this);
+        var id = edit.data("key");
+        var oldComment = edit.parent().siblings(".text").text();
+    
+        var form;
+        var formCheck = edit.parent().next();
+        if (formCheck.is("form")) {
+            form = formCheck;
+        } else {
+            form = discussion.form.clone();
+        }
+    
+        var show = edit.data("show");
+        if (show === undefined) {
+            form.data("type", "modify");
+            //I would prefer adding properties to the json ajax object directly.
+            //form.find(".headline").text("Edit comment");
+            form.find(".headline").remove();
+            form.find(".createComment").text(oldComment + "");
+            form.prepend("<input type='hidden' name='modify' value='true'/>");
+            form.prepend("<input type='hidden' name='id' value='" + id + "' />");
+            form.submit(function(event) {
+                var currentForm = $(this);
+                sendForm(currentForm);
+                event.preventDefault();
+            });
+    
+            edit.data("exist", true);
+    
+            edit.parent().siblings(".text").css("display", "none");
+    
+            edit.parent().after(form);
+        }
+        else {
+            form.remove();
+            edit.removeData("exist");
+        }
+    
+    
+        event.preventDefault();
+    });
+    
+    //Handle reply on comments
+    $('.singleComment .respond').click(function (event) {
+        var respond = $(this);
+        var show = respond.data("showForm");
+        var form = respond.siblings($('.startDiscussion'));
+        //Toggle show on button press
+        if (show === "show") {
+            form.css("display", "none");
+            respond.data("showForm", "hide");
+        } else {
+            //Check if it has the form under it or not
+            if (form.length == 0) {
+                var parent = respond.data("parent");
+    
+                var newForm = discussion.form.clone();
+                newForm.prepend("<input type='hidden' name='parent' value='" + parent + "' />");
+                newForm.submit(function(event) {
+                    var currentForm = $(this);
+                    sendForm(currentForm);
+                    event.preventDefault(); // avoid to execute the actual submit of the form.
+                });
+                form = newForm;
+                respond.parent().append(newForm);
+            }
+    
+            form.css("display", "");
+            form.data("type", "reply");
+            respond.data("showForm", "show");
+        }
+    
+        event.preventDefault(); //*shrug* Button could do strange things
+    });
 
+});
 //Submit action on the form elements
-function handleSubmit(event) {
-
-    var form = $(this);
+function sendForm(form) {
     var url = form.attr('action');
 
     $.ajax({
@@ -30,14 +111,12 @@ function handleSubmit(event) {
             console.log("posted new comment");
             insertComment(form, data);
         } else {
-            console.log("Unexpected server response " + data);
+            console.log("Unexpected server response");
         }
     }).fail(function (data) {
         console.log("Error could not submit form ", data);
         form.prepend("<div class='error'>Error could not submit comment</div>");
     });
-
-    event.preventDefault(); // avoid to execute the actual submit of the form.
 }
 
 //Handle the different comment types: Reply, modify and type
@@ -90,71 +169,3 @@ function createComment(form, jsonResponse, type) {
 }
 
 //Handle all edit/modify a comment
-$('.singleComment .edit').click(function (event) {
-    var edit = $(this);
-    var id = edit.data("key");
-    var oldComment = edit.parent().siblings(".text").text();
-
-    var form;
-    var formCheck = edit.parent().next();
-    if (formCheck.is("form")) {
-        form = formCheck;
-    } else {
-        form = discussion.form.clone();
-    }
-
-    var show = edit.data("show");
-    if (show === undefined) {
-        form.data("type", "modify");
-        //I would prefer adding properties to the json ajax object directly.
-        //form.find(".headline").text("Edit comment");
-        form.find(".headline").remove();
-        form.find(".createComment").text(oldComment + "");
-        form.prepend("<input type='hidden' name='modify' value='true'/>");
-        form.prepend("<input type='hidden' name='id' value='" + id + "' />");
-        form.submit(handleSubmit);
-
-        edit.data("exist", true);
-
-        edit.parent().siblings(".text").css("display", "none");
-
-        edit.parent().after(form);
-    }
-    else {
-        form.remove();
-        edit.removeData("exist");
-    }
-
-
-    event.preventDefault();
-});
-
-//Handle reply on comments
-$('.singleComment .respond').click(function (event) {
-    var respond = $(this);
-    var show = respond.data("showForm");
-    var form = respond.siblings($('.startDiscussion'));
-    //Toggle show on button press
-    if (show === "show") {
-        form.css("display", "none");
-        respond.data("showForm", "hide");
-    } else {
-        //Check if it has the form under it or not
-
-        if (form.length == 0) {
-            var parent = respond.data("parent");
-
-            var newForm = discussion.form.clone();
-            newForm.prepend("<input type='hidden' name='parent' value='" + parent + "' />");
-            newForm.submit(handleSubmit);
-            form = newForm;
-            respond.parent().append(newForm);
-        }
-
-        form.css("display", "");
-        form.data("type", "reply");
-        respond.data("showForm", "show");
-    }
-
-    event.preventDefault(); //*shrug* Button could do strange things
-});

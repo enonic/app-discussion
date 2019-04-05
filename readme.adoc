@@ -20,6 +20,12 @@ Size: How many comments should be shown in the latest part. +
 There are currently two supported languages Norwegian, and English. +
 You can change the language used by setting the language on a the your site in content studio. +
 
+## Version
+
+*v1.1.1* Bug fixes, and refactoring + 
+*v1.1.0* Added default styling (App Setting) +
+*v1.0.0* Initial release
+
 ## Market
 
 The application should be on the enonic market. +

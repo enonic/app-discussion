@@ -1,11 +1,10 @@
 var portal = require("/lib/xp/portal");
 var contentLib = require("/lib/xp/content");
 var thymeleaf = require("/lib/thymeleaf");
-var tools = require("/lib/tools");
 var commentLib = require("/lib/commentManager");
 var auth = require("/lib/xp/auth");
-//var adminLib = require('/lib/xp/admin');
 var i18nLib = require('/lib/xp/i18n');
+//var tools = require("/lib/tools");
 
 function createLocalizeParam(word, lang) {
     var obj = {

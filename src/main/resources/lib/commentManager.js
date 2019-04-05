@@ -1,8 +1,7 @@
-var appersist = require('/lib/openxp/appersist');
 var contentLib = require('/lib/xp/content');
-var portal = require('/lib/xp/portal');
+var nodeLib = require('/lib/xp/node');
 var authLib = require('/lib/xp/auth');
-var tools = require('/lib/tools');
+//var tools = require('/lib/tools');
 
 exports.createComment = createComment;
 exports.modifyComment = modifyComment;
@@ -20,7 +19,12 @@ exports.getComment = getComment;
  * @returns {Object} Repo node created or Null if failure
  */
 function createComment(comment, contentId, parent, connection) {
-    connection = connection || appersist.repository.getConnection();
+    if (!connection) {
+        connection = nodeLib.connect({
+            repoId: "com.enonic.app.discussion",
+            branch: "master",
+        });
+    }
 
     //Check if content exists
     var currentContent = contentLib.get({ key: contentId });
@@ -39,7 +43,7 @@ function createComment(comment, contentId, parent, connection) {
         type: "comment",
         creationTime: new Date().toISOString(),
         data: {
-            comment: portal.sanitizeHtml(comment),
+            comment: comment,
             userName: currentUser.displayName,
             userId: currentUser.key,
         },
@@ -58,8 +62,6 @@ function createComment(comment, contentId, parent, connection) {
         commentModel.parentId = parentNode._id;
     }
     node = connection.create(commentModel);
-    //unsure if we should log all comments
-    //log.info("Created new comment"+node._id);
     return node;
 }
 
@@ -70,7 +72,12 @@ function createComment(comment, contentId, parent, connection) {
  * @param {RepoConnection} [connection] Send in your own repo connection
  */
 function modifyComment(id, commentEdit, connection) {
-    connection = connection || appersist.repository.getConnection();
+    if (!connection) {
+        connection = nodeLib.connect({
+            repoId: "com.enonic.app.discussion",
+            branch: "master",
+        });
+    }
 
     //Check if users are the same.
     var currentUserId = authLib.getUser().key;
@@ -91,8 +98,7 @@ function modifyComment(id, commentEdit, connection) {
     });
 
     function edit(node) {
-        node.data.comment = portal.sanitizeHtml(commentEdit);
-        //log.info("Edited comment " + node._id);
+        node.data.comment = commentEdit;
         return node;
     }
 
@@ -157,8 +163,8 @@ function addSorted(group, element) {
 function getNodeData(node) {
     return {
         _id: node._id,
-        userName: portal.sanitizeHtml(node.data.userName), //https://xkcd.com/327/
-        text: portal.sanitizeHtml(node.data.comment),
+        userName: node.data.userName,
+        text: node.data.comment,
         creationTime: node.creationTime,
         time: formatDate(node.creationTime),
         userId: node.data.userId,
@@ -172,7 +178,12 @@ function getNodeData(node) {
  * @returns {Array} Array of objects in a hierarcy structure
  */
 function getComments(contentId, connection) {
-    connection = connection || appersist.repository.getConnection();
+    if (!connection) {
+        connection = nodeLib.connect({
+            repoId: "com.enonic.app.discussion",
+            branch: "master",
+        });
+    }
 
     //Could sort by creation time for faster lookup?
     //500+ should be handle by pagination.
@@ -226,7 +237,12 @@ function getComments(contentId, connection) {
  * @returns {Object} Repo comment node
  */
 function getComment(commentId, connection) {
-    connection = connection || appersist.repository.getConnection();
+    if (!connection) {
+        connection = nodeLib.connect({
+            repoId: "com.enonic.app.discussion",
+            branch: "master",
+        });
+    }
     return connection.get({ keys: commentId });
 }
 
