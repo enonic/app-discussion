@@ -22,7 +22,7 @@ You can change the language used by setting the language on a the your site in c
 
 ## Version
 
-*v1.1.2* Usernames are sanitized
+*v1.1.2* Usernames are sanitized +
 *v1.1.1* Bug fixes, and refactoring + 
 *v1.1.0* Added default styling (App Setting) +
 *v1.0.0* Initial release
