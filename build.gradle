@@ -20,6 +20,7 @@ dependencies {
     include "com.enonic.xp:lib-i18n:${xpVersion}"
     include "com.enonic.xp:lib-node:${xpVersion}"
     include "com.enonic.xp:lib-auth:${xpVersion}"
+    include "com.enonic.xp:lib-repo:${xpVersion}"
 
 	include 'com.enonic.lib:lib-thymeleaf:1.0.1'
 }
@@ -32,9 +33,9 @@ wrapper {
 }
 
 repositories {
-    maven {
+   /*  maven {
         url 'https://dl.bintray.com/openxp/public'
-    }
+    } */
     mavenLocal()
     jcenter()
     xp.enonicRepo()

@@ -111,7 +111,8 @@ function sendForm(form) {
             console.log("posted new comment");
             insertComment(form, data);
         } else {
-            console.log("Unexpected server response");
+            console.log("Response data was empty, server probably returned null value");
+            form.prepend("<div class='error'>Error, got empty response from the server</div>");
         }
     }).fail(function (data) {
         console.log("Error could not submit form ", data);

@@ -1,14 +1,115 @@
 var contentLib = require('/lib/xp/content');
 var nodeLib = require('/lib/xp/node');
 var authLib = require('/lib/xp/auth');
-//var tools = require('/lib/tools');
+var repoLib = require('/lib/xp/repo');
+var tools = require('/lib/tools');
 
 exports.createComment = createComment;
 exports.modifyComment = modifyComment;
 exports.getNodeData = getNodeData;
 exports.getComments = getComments;
 exports.getComment = getComment;
+exports.getConnection = getConnection;
+exports.createRepo = createRepo;
 //exports.createTestComments = createTestComments;
+
+/**
+ * Permission getter so it can be reused.
+ * @return {Array} permission array
+ */
+function getPermissions() {
+    return [
+        {
+            principal: "role:postcomment",
+            allow: [
+                "READ",
+                "CREATE",
+                "MODIFY",
+                "DELETE",
+                "PUBLISH",
+            ],
+            deny: [],
+        },
+        {
+            principal: "role:system.authenticated",
+            allow: [
+                "READ",
+                "CREATE",
+                "MODIFY",
+                "DELETE",
+                "PUBLISH",
+            ],
+            deny: [],
+        },
+        {
+            principal: "role:system.admin",
+            allow: [
+                "READ",
+                "CREATE",
+                "MODIFY",
+                "DELETE",
+                "PUBLISH",
+                "READ_PERMISSIONS",
+                "WRITE_PERMISSIONS"
+            ],
+            deny: [],
+        },
+    ];
+}
+
+/**
+ * Creates a new repo for this application
+ * @returns {RepoConnection}
+ */
+function createRepo() {
+    var repoConnection = repoLib.create({
+        id: "com.enonic.app.discussion",
+        rootPermissions: getPermissions(),
+        rootChildOrder: "_timestamp ASC",
+    });
+
+    if (typeof repoConnection.id === "undefined") {
+        log.info("could not create repo connection");
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * Tried to connect to a repo, creates it if it cant find it.
+ * @returns {repoConnection}
+ */
+function getConnection() {
+
+    var admin = authLib.hasRole('role:system.admin');
+    //You need admin acces to see if repo exists... sigh
+    if (admin) {
+        var repo = repoLib.get('com.enonic.app.discussion') || createRepo();
+    }
+
+    var connection = nodeLib.connect({
+        repoId: "com.enonic.app.discussion",
+        branch: "master",
+        principals: ["role:system.admin"],
+    });
+
+    //Updating permissions if they are outdated
+    if (admin) {
+        var permissions = getPermissions();
+        var root = connection.get('000-000-000-000');
+        //v1.1.2 has 2 permissions (default)
+        //V1.2.0 has 3 permissions soo this updates it (hopefully)
+        if (root._permissions.length != permissions.length) {
+            log.info("Updating permissions on com.enonic.app.discussion");
+            connection.setRootPermissions({
+                _permissions: permissions,
+            });
+        }
+    }
+
+    return connection;
+}
 
 /**
  * Creates a new comment, assumes the current content is set.
@@ -19,11 +120,14 @@ exports.getComment = getComment;
  * @returns {Object} Repo node created or Null if failure
  */
 function createComment(comment, contentId, parent, connection) {
-    if (!connection) {
-        connection = nodeLib.connect({
-            repoId: "com.enonic.app.discussion",
-            branch: "master",
-        });
+    if (connection == null) {
+        connection = getConnection();
+    }
+
+    var currentUser = authLib.getUser();
+    if (currentUser == null) {
+        log.info("No user found. Need to login to post comments");
+        return null;
     }
 
     //Check if content exists
@@ -36,20 +140,23 @@ function createComment(comment, contentId, parent, connection) {
         return null;
     }
 
-    var currentUser = authLib.getUser();
+    //Emails in username fix. Removes from "<" to ">".
+    var sanitizedName = currentUser.displayName.replace(/([<](.)*[>])/g, "");
+
+    var now = new Date().toISOString();
 
     var commentModel = {
+        _name: currentContent.displayName + "" + now,
+        _permissions: getPermissions(),
         content: contentId,
         type: "comment",
-        creationTime: new Date().toISOString(),
+        creationTime: now,
         data: {
             comment: comment,
-            userName: currentUser.displayName,
+            userName: sanitizedName,
             userId: currentUser.key,
         },
     };
-
-    var node;
 
     if (parent != null) {
         var parentNode = connection.get(parent);
@@ -61,7 +168,9 @@ function createComment(comment, contentId, parent, connection) {
         commentModel._parentPath = parentNode._path;
         commentModel.parentId = parentNode._id;
     }
-    node = connection.create(commentModel);
+
+    var node = connection.create(commentModel);
+
     return node;
 }
 
@@ -72,15 +181,17 @@ function createComment(comment, contentId, parent, connection) {
  * @param {RepoConnection} [connection] Send in your own repo connection
  */
 function modifyComment(id, commentEdit, connection) {
-    if (!connection) {
-        connection = nodeLib.connect({
-            repoId: "com.enonic.app.discussion",
-            branch: "master",
-        });
+    if (connection == null) {
+        connection = getConnection();
     }
 
+    var user = authLib.getUser();
+    if (user == null) {
+        log.info("No user found! Probably user session ended");
+        return null;
+    }
     //Check if users are the same.
-    var currentUserId = authLib.getUser().key;
+    var currentUserId = user.key;
     var commentUser = connection.get(id).data.userId;
 
     if (!commentUser) {
@@ -178,11 +289,8 @@ function getNodeData(node) {
  * @returns {Array} Array of objects in a hierarcy structure
  */
 function getComments(contentId, connection) {
-    if (!connection) {
-        connection = nodeLib.connect({
-            repoId: "com.enonic.app.discussion",
-            branch: "master",
-        });
+    if (connection == null) {
+        connection = getConnection();
     }
 
     //Could sort by creation time for faster lookup?

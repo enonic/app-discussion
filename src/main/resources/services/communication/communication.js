@@ -19,7 +19,7 @@ function postComment(req) {
     }
     if (comment == null) {
         log.info("Could not create new comment!\n" + req);
-        return false;
+        return null;
     }
 
     var nodeData = commentLib.getNodeData(comment);

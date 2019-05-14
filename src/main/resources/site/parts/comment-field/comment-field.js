@@ -13,7 +13,7 @@ function createLocalizeParam(word, lang) {
     if (lang) {
         obj.lang = lang;
     }
-    //log.info(JSON.stringify(obj, null, 2));
+    
     return obj;
 }
 
@@ -27,10 +27,7 @@ exports.get = function (ref) {
     //Lang code is wrongly formated (sometimes)
     langCode = langCode ? langCode.replace(/_/g, '-') : "";
 
-    //log.info(langCode);
-
     var discussion = commentLib.getComments(portalContent._id);
-    //createLocalizeParam("replyMessage", langCode)
 
     var locale = {
         reply: i18nLib.localize({
@@ -68,11 +65,9 @@ exports.get = function (ref) {
 
     var siteConfig = portal.getSiteConfig();
 
-    // log.info(JSON.stringify(siteConfig, null, 2));
-
     if (siteConfig.defaultStyle) {
         addition.push("<link rel='stylesheet' href='" + portal.assetUrl({ path: "css/default.css" }) + "'/>");
-    }
+    }    
 
     return {
         body: thymeleaf.render(view, model),
