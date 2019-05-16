@@ -14,9 +14,9 @@ This wil stop the rendering of the comment fields.
 New in *v1.2.0*: +
 Users need to have correct role *postcomment* or role *authenticated* or role *admin* in the system. +
 Users cant post comments if notlogged in or wrong access. +
-("role:postcomment" +
+"role:postcomment" +
 "role:system.authenticated" +
-"role:system.admin" )+
+"role:system.admin" +
 
 Repo nodes have names, that improved the data structures to be better sorted and easier to read.
 
@@ -31,7 +31,7 @@ You can change the language used by setting the language on a the your site in c
 
 ## Version
 
-*v1.2.0* Authentication of users, better data structures+
+*v1.2.0* Authentication of users, better data structures +
 *v1.1.2* Usernames are sanitized +
 *v1.1.1* Bug fixes, and refactoring + 
 *v1.1.0* Added default styling (App Setting) +
