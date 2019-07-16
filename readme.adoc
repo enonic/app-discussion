@@ -31,6 +31,7 @@ You can change the language used by setting the language on a the your site in c
 
 ## Version
 
+*v1.2.1* Bug fix + 
 *v1.2.0* Authentication of users, better data structures +
 *v1.1.2* Usernames are sanitized +
 *v1.1.1* Bug fixes, and refactoring + 

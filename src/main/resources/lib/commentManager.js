@@ -146,7 +146,7 @@ function createComment(comment, contentId, parent, connection) {
     var now = new Date().toISOString();
 
     var commentModel = {
-        _name: currentContent.displayName + "" + now,
+        _name: currentContent._name + "-" + now,
         _permissions: getPermissions(),
         content: contentId,
         type: "comment",
