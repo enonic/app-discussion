@@ -1,10 +1,10 @@
 var thymeleaf = require("/lib/thymeleaf");
 var commentLib = require("/lib/commentManager");
 var contentLib = require("/lib/xp/content");
-var appersist = require('/lib/openxp/appersist');
+var nodeLib = require('/lib/xp/node');
 var portal = require('/lib/xp/portal');
-var tools = require('/lib/tools');
 var i18n = require('/lib/xp/i18n');
+//var tools = require('/lib/tools');
 
 exports.get = function (req) {
     var content = portal.getComponent();
@@ -18,7 +18,10 @@ exports.get = function (req) {
     if (langCode)
         langCode = langCode.replace(/_/g, '-'); //replace all underscore with dash
 
-    var connection = appersist.repository.getConnection();
+    var connection = nodeLib.connect({
+        repoId: "com.enonic.app.discussion",
+        branch: "master",
+    });
 
     //query the latest comments here
     var result = connection.query({
@@ -54,14 +57,14 @@ exports.get = function (req) {
 
         var nodeContext = contentLib.get({ key: node.content });
         //If content is deleted we cant use it.
-        if (!nodeContext) { 
+        if (!nodeContext) {
             comments[i] = null;
             break;
         }
         comments[i] = commentLib.getNodeData(node);
         comments[i].contentUrl = portal.pageUrl({ id: node.content });
         comments[i].contentName = contentLib.get({ key: node.content }).displayName;
-        comments[i].text = portal.sanitizeHtml(comments[i].text);
+        comments[i].text = comments[i].text;
     }
 
     var on = i18n.localize({
@@ -81,7 +84,7 @@ exports.get = function (req) {
     var siteConfig = portal.getSiteConfig();
 
     if (siteConfig.defaultStyle) {
-        addition.push("<link rel='stylesheet' href='"+ portal.assetUrl({ path: "css/default.css" }) + "'/>");
+        addition.push("<link rel='stylesheet' href='" + portal.assetUrl({ path: "css/default.css" }) + "'/>");
     }
 
     return {

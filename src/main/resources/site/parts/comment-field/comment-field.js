@@ -1,11 +1,10 @@
 var portal = require("/lib/xp/portal");
 var contentLib = require("/lib/xp/content");
 var thymeleaf = require("/lib/thymeleaf");
-var tools = require("/lib/tools");
 var commentLib = require("/lib/commentManager");
 var auth = require("/lib/xp/auth");
-//var adminLib = require('/lib/xp/admin');
 var i18nLib = require('/lib/xp/i18n');
+//var tools = require("/lib/tools");
 
 function createLocalizeParam(word, lang) {
     var obj = {
@@ -14,7 +13,7 @@ function createLocalizeParam(word, lang) {
     if (lang) {
         obj.lang = lang;
     }
-    //log.info(JSON.stringify(obj, null, 2));
+    
     return obj;
 }
 
@@ -28,10 +27,7 @@ exports.get = function (ref) {
     //Lang code is wrongly formated (sometimes)
     langCode = langCode ? langCode.replace(/_/g, '-') : "";
 
-    //log.info(langCode);
-
     var discussion = commentLib.getComments(portalContent._id);
-    //createLocalizeParam("replyMessage", langCode)
 
     var locale = {
         reply: i18nLib.localize({
@@ -69,11 +65,9 @@ exports.get = function (ref) {
 
     var siteConfig = portal.getSiteConfig();
 
-    // log.info(JSON.stringify(siteConfig, null, 2));
-
     if (siteConfig.defaultStyle) {
         addition.push("<link rel='stylesheet' href='" + portal.assetUrl({ path: "css/default.css" }) + "'/>");
-    }
+    }    
 
     return {
         body: thymeleaf.render(view, model),
