@@ -31,6 +31,7 @@ You can change the language used by setting the language on a the your site in c
 
 ## Version
 
+*v2.0.0* Support for XP7 + 
 *v1.2.1* Bug fix + 
 *v1.2.0* Authentication of users, better data structures +
 *v1.1.2* Usernames are sanitized +
@@ -40,8 +41,7 @@ You can change the language used by setting the language on a the your site in c
 
 ## Market
 
-The application should be on the enonic market. +
-So you can browser XP applications tab and install it from the UI.
+The application is on the market so you can install it application if the market is available from your server.
 
 ## Manual installation
 
