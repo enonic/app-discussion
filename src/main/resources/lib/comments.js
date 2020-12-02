@@ -1,8 +1,7 @@
-var contentLib = require('/lib/xp/content');
-var nodeLib = require('/lib/xp/node');
-var authLib = require('/lib/xp/auth');
-var repoLib = require('/lib/xp/repo');
-var tools = require('/lib/tools');
+const contentLib = require('/lib/xp/content');
+const nodeLib = require('/lib/xp/node');
+const authLib = require('/lib/xp/auth');
+const repoLib = require('/lib/xp/repo');
 
 exports.createComment = createComment;
 exports.modifyComment = modifyComment;
@@ -13,6 +12,13 @@ exports.getConnection = getConnection;
 exports.createRepo = createRepo;
 //exports.createTestComments = createTestComments;
 
+
+const ROLE_POSTCOMMENT = "role:postcomment";
+const ROLE_SYSAUTH = "role:system.authenticated";
+const ROLE_SYSADMIN =  "role:system.admin";
+
+const REPO_ID = "com.enonic.app.discussion";
+exports.REPO_ID = REPO_ID;
 /**
  * Permission getter so it can be reused.
  * @return {Array} permission array
@@ -20,7 +26,7 @@ exports.createRepo = createRepo;
 function getPermissions() {
     return [
         {
-            principal: "role:postcomment",
+            principal: ROLE_POSTCOMMENT,
             allow: [
                 "READ",
                 "CREATE",
@@ -31,7 +37,7 @@ function getPermissions() {
             deny: [],
         },
         {
-            principal: "role:system.authenticated",
+            principal: ROLE_SYSAUTH,
             allow: [
                 "READ",
                 "CREATE",
@@ -42,7 +48,7 @@ function getPermissions() {
             deny: [],
         },
         {
-            principal: "role:system.admin",
+            principal: ROLE_SYSADMIN,
             allow: [
                 "READ",
                 "CREATE",
@@ -62,14 +68,14 @@ function getPermissions() {
  * @returns {RepoConnection}
  */
 function createRepo() {
-    var repoConnection = repoLib.create({
-        id: "com.enonic.app.discussion",
+    const repoConnection = repoLib.create({
+        id: REPO_ID,
         rootPermissions: getPermissions(),
         rootChildOrder: "_timestamp ASC",
     });
 
     if (typeof repoConnection.id === "undefined") {
-        log.info("could not create repo connection");
+        log.error(`Could not create repo connection: ${REPO_ID}`);
         return false;
     }
 
@@ -82,26 +88,26 @@ function createRepo() {
  */
 function getConnection() {
 
-    var admin = authLib.hasRole('role:system.admin');
+    const admin = authLib.hasRole(ROLE_SYSADMIN);
     //You need admin acces to see if repo exists... sigh
     if (admin) {
-        var repo = repoLib.get('com.enonic.app.discussion') || createRepo();
+        repoLib.get(REPO_ID) || createRepo();
     }
 
-    var connection = nodeLib.connect({
-        repoId: "com.enonic.app.discussion",
+    const connection = nodeLib.connect({
+        repoId: REPO_ID,
         branch: "master",
-        principals: ["role:system.admin"],
+        principals: [ROLE_SYSADMIN],
     });
 
     //Updating permissions if they are outdated
     if (admin) {
-        var permissions = getPermissions();
-        var root = connection.get('000-000-000-000');
+        const permissions = getPermissions();
+        const root = connection.get('000-000-000-000');
         //v1.1.2 has 2 permissions (default)
         //V1.2.0 has 3 permissions soo this updates it (hopefully)
         if (root._permissions.length != permissions.length) {
-            log.info("Updating permissions on com.enonic.app.discussion");
+            log.info(`Updating permissions on ${REPO_ID}`);
             connection.setRootPermissions({
                 _permissions: permissions,
             });
@@ -113,7 +119,7 @@ function getConnection() {
 
 /**
  * Creates a new comment, assumes the current content is set.
- * @param {string} comment The comment of the new post 
+ * @param {string} comment The comment of the new post
  * @param {string} contentId The node id the comment is attached to
  * @param {String} [parent] The parent node used as to set give a new child
  * @param {RepoConnection} [connection] Used to spesify what repo to use
@@ -124,14 +130,14 @@ function createComment(comment, contentId, parent, connection) {
         connection = getConnection();
     }
 
-    var currentUser = authLib.getUser();
+    const currentUser = authLib.getUser();
     if (currentUser == null) {
         log.info("No user found. Need to login to post comments");
         return null;
     }
 
     //Check if content exists
-    var currentContent = contentLib.get({ key: contentId });
+    const currentContent = contentLib.get({ key: contentId });
     if (!currentContent) {
         log.info("Got an contentId that does not exist");
         return null;
@@ -141,11 +147,11 @@ function createComment(comment, contentId, parent, connection) {
     }
 
     //Emails in username fix. Removes from "<" to ">".
-    var sanitizedName = currentUser.displayName.replace(/([<](.)*[>])/g, "");
+    const sanitizedName = currentUser.displayName.replace(/([<](.)*[>])/g, "");
 
-    var now = new Date().toISOString();
+    const now = new Date().toISOString();
 
-    var commentModel = {
+    const commentModel = {
         _name: currentContent._name + "-" + now,
         _permissions: getPermissions(),
         content: contentId,
@@ -159,7 +165,7 @@ function createComment(comment, contentId, parent, connection) {
     };
 
     if (parent != null) {
-        var parentNode = connection.get(parent);
+        const parentNode = connection.get(parent);
         if (typeof parentNode === 'undefined' || parentNode === null) {
             log.info("Cant find parent with id:" + parent);
             return null;
@@ -169,13 +175,13 @@ function createComment(comment, contentId, parent, connection) {
         commentModel.parentId = parentNode._id;
     }
 
-    var node = connection.create(commentModel);
+    const node = connection.create(commentModel);
 
     return node;
 }
 
 /**
- * Used to set a new comment 
+ * Used to set a new comment
  * @param {String} id Node repo id
  * @param {String} comment The new comment to use
  * @param {RepoConnection} [connection] Send in your own repo connection
@@ -185,14 +191,14 @@ function modifyComment(id, commentEdit, connection) {
         connection = getConnection();
     }
 
-    var user = authLib.getUser();
+    const user = authLib.getUser();
     if (user == null) {
         log.info("No user found! Probably user session ended");
         return null;
     }
     //Check if users are the same.
-    var currentUserId = user.key;
-    var commentUser = connection.get(id).data.userId;
+    const currentUserId = user.key;
+    const commentUser = connection.get(id).data.userId;
 
     if (!commentUser) {
         log.info("Could not find userId on comment");
@@ -203,7 +209,7 @@ function modifyComment(id, commentEdit, connection) {
         return null;
     }
 
-    var result = connection.modify({
+    const result = connection.modify({
         key: id,
         editor: edit
     });
@@ -228,7 +234,7 @@ function modifyComment(id, commentEdit, connection) {
  * @returns {Boolean} success or failure
  */
 function setChildNode(collection, node) {
-    for (var j = 0; j < collection.length; j++) {
+    for (let j = 0; j < collection.length; j++) {
         if (collection[j]._id === node.parentId) {
             //If no children create child array
             if (typeof collection[j].children === "undefined" || collection[j].children == null) {
@@ -238,7 +244,7 @@ function setChildNode(collection, node) {
             }
             return true;
         } else if (typeof collection[j].children !== "undefined") {
-            var set = setChildNode(collection[j].children, node);
+            const set = setChildNode(collection[j].children, node);
             //If we found in children return true.
             if (set) return set;
         }
@@ -248,12 +254,12 @@ function setChildNode(collection, node) {
 
 /**
  * Adds new elements to given array, sorted by the elements creationDate
- * @param {Array} group 
+ * @param {Array} group
  * @param {Object} element
  */
 function addSorted(group, element) {
     //reverse order since last comment is at the end.
-    for (var index = group.length - 1; index >= -1; index--) {
+    for (let index = group.length - 1; index >= -1; index--) {
         //No post in group is posted earlier put it in front
         if (index == -1) {
             group.splice(index, 0, getNodeData(element));
@@ -295,7 +301,7 @@ function getComments(contentId, connection) {
 
     //Could sort by creation time for faster lookup?
     //500+ should be handle by pagination.
-    var result = connection.query({
+    const result = connection.query({
         start: 0,
         count: 500,
         sort: "creationTime ASC",
@@ -321,12 +327,12 @@ function getComments(contentId, connection) {
     });
 
     //Array of objects with nested object.
-    var comments = [];
+    const comments = [];
 
-    for (var i = 0; i < result.hits.length; i++) {
-        var node = connection.get(result.hits[i].id);
+    for (let i = 0; i < result.hits.length; i++) {
+        const node = connection.get(result.hits[i].id);
         if (typeof node.parentId !== "undefined" && node.parentId !== null) {
-            var check = setChildNode(comments, node);
+            const check = setChildNode(comments, node);
             if (check == false) {
                 log.info("could not set node:" + node._id);
             }
@@ -340,14 +346,14 @@ function getComments(contentId, connection) {
 
 /**
  * Get a comment from the given repoConnection
- * @param {String} commentId 
- * @param {RepoConnection} [connection] 
+ * @param {String} commentId
+ * @param {RepoConnection} [connection]
  * @returns {Object} Repo comment node
  */
 function getComment(commentId, connection) {
     if (!connection) {
         connection = nodeLib.connect({
-            repoId: "com.enonic.app.discussion",
+            repoId: REPO_ID,
             branch: "master",
         });
     }
@@ -356,22 +362,22 @@ function getComment(commentId, connection) {
 
 //Debugging development method only
 /*function createTestComments(connection) {
-    var node = createComment(connection, "Lorem ipsum");
+    const node = createComment(connection, "Lorem ipsum");
     createComment(connection, "This is a lot of text right2");
     //createComment(connection, "This is a lot of text right3");
     //createComment(connection, "This is a lot of text right4");
-    var node2 = createComment(connection, "This is a lot of text right1.1", node._id);
+    const node2 = createComment(connection, "This is a lot of text right1.1", node._id);
     createComment(connection, "This is a lot of text right1.2", node._id);
     createComment(connection, "This is a lot of text right1.3", node._id);
     createComment(connection, "This is a lot of text right1.4", node._id);
     createComment(connection, "This is a lot of text right1.5", node._id);
-    var node3 = createComment(connection, "Lorem ipsum with text1.1.1", node2._id);
+    const node3 = createComment(connection, "Lorem ipsum with text1.1.1", node2._id);
     createComment(connection, "Lorem ipsum with text1.1.2", node2._id);
 }*/
 
 function formatDate(isoString) {
-    var time = new Date(isoString);
-    var timeStr = ('0' + time.getHours()).slice(-2) + ":" +
+    const time = new Date(isoString);
+    const timeStr = ('0' + time.getHours()).slice(-2) + ":" +
         ('0' + time.getMinutes()).slice(-2) + " " +
         ('0' + time.getDate()).slice(-2) + "/" +
         ('0' + (time.getMonth() + 1)).slice(-2) + "/" +

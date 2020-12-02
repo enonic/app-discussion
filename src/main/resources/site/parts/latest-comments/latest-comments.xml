@@ -1,5 +1,6 @@
 <part>
     <display-name>Latest comments</display-name>
+    <description>Lists the latest comments on all the blog's posts</description>
     <form>
         <field-set name="things">
             <label>Latest comments</label>

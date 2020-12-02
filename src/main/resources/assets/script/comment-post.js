@@ -12,11 +12,10 @@ $(function () {
             '</div></li>'),
         form: $(".startDiscussion").first().clone(),
     };
-    
+
     //Adding events on document ready
     $(".startDiscussion").submit(function (event) {
-        var form = $(this);
-        sendForm(form);
+        sendForm( $(this) );
         event.preventDefault();
     });
 
@@ -24,7 +23,7 @@ $(function () {
         var edit = $(this);
         var id = edit.data("key");
         var oldComment = edit.parent().siblings(".text").text();
-    
+
         var form;
         var formCheck = edit.parent().next();
         if (formCheck.is("form")) {
@@ -32,7 +31,7 @@ $(function () {
         } else {
             form = discussion.form.clone();
         }
-    
+
         var show = edit.data("show");
         if (show === undefined) {
             form.data("type", "modify");
@@ -43,26 +42,25 @@ $(function () {
             form.prepend("<input type='hidden' name='modify' value='true'/>");
             form.prepend("<input type='hidden' name='id' value='" + id + "' />");
             form.submit(function(event) {
-                var currentForm = $(this);
-                sendForm(currentForm);
+                sendForm( $(this) );
                 event.preventDefault();
             });
-    
+
             edit.data("exist", true);
-    
+
             edit.parent().siblings(".text").css("display", "none");
-    
+
             edit.parent().after(form);
         }
         else {
             form.remove();
             edit.removeData("exist");
         }
-    
-    
+
+
         event.preventDefault();
     });
-    
+
     //Handle reply on comments
     $('.singleComment .respond').click(function (event) {
         var respond = $(this);
@@ -76,23 +74,22 @@ $(function () {
             //Check if it has the form under it or not
             if (form.length == 0) {
                 var parent = respond.data("parent");
-    
+
                 var newForm = discussion.form.clone();
                 newForm.prepend("<input type='hidden' name='parent' value='" + parent + "' />");
                 newForm.submit(function(event) {
-                    var currentForm = $(this);
-                    sendForm(currentForm);
+                    sendForm( $(this) );
                     event.preventDefault(); // avoid to execute the actual submit of the form.
                 });
                 form = newForm;
                 respond.parent().append(newForm);
             }
-    
+
             form.css("display", "");
             form.data("type", "reply");
             respond.data("showForm", "show");
         }
-    
+
         event.preventDefault(); //*shrug* Button could do strange things
     });
 
@@ -122,14 +119,8 @@ function sendForm(form) {
 
 //Handle the different comment types: Reply, modify and type
 function insertComment(form, data) {
-    var type = form.data("type");
-
-    if (type) {
-        createComment(form, data, type);
-    }
-    else {
-        createComment(form, data, "top");
-    }
+    var type = form.data("type") || "top";
+    createComment(form, data, type);
 }
 
 //Create a "fake" comment so it looks like they posted it
@@ -140,8 +131,7 @@ function createComment(form, jsonResponse, type) {
     var singleComment = discussion.comment.clone();
 
     singleComment.find(".text").text(postData.text);
-    var userName = postData.userName;
-    singleComment.find(".name").text(userName);
+    singleComment.find(".name").text(postData.userName);
     singleComment.find(".time").text(postData.time);
     //singleComment.find('.bottom').html('<button class="respond">reply</button>');
 

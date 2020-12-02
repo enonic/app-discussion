@@ -2,7 +2,7 @@
     <div th:replace="/site/parts/comment-field/comment-tree::nestedComment (${ discussion })"
         th:remove="tag"></div>
     <form class="startDiscussion" autocomplete="off" th:action="${ serviceUrl }">
-        <!--/* I'm really not a fan of exposing the current content to the user */-->
+
         <input type="hidden" name="content" th:value="${ currentContent }" />
 
         <h3 class="headline" th:text="${ locale.newComment }">Post title</h3>

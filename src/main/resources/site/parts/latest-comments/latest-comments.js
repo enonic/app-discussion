@@ -1,30 +1,30 @@
-var thymeleaf = require("/lib/thymeleaf");
-var commentLib = require("/lib/commentManager");
-var contentLib = require("/lib/xp/content");
-var nodeLib = require('/lib/xp/node');
-var portal = require('/lib/xp/portal');
-var i18n = require('/lib/xp/i18n');
-//var tools = require('/lib/tools');
+const thymeleaf = require("/lib/thymeleaf");
+const commentLib = require("/lib/comments");
+const contentLib = require("/lib/xp/content");
+const nodeLib = require('/lib/xp/node');
+const portal = require('/lib/xp/portal');
+const i18n = require('/lib/xp/i18n');
+//const tools = require('/lib/tools');
 
 exports.get = function (req) {
-    var content = portal.getComponent();
+    const content = portal.getComponent();
 
-    var siteContent = portal.getContent();
+    const siteContent = portal.getContent();
 
-    var size = content.config.size;
-    var headline = content.config.headline;
-    var langCode = siteContent.language;
+    const size = content.config.size;
+    const headline = content.config.headline;
 
+    let langCode = siteContent.language;
     if (langCode)
         langCode = langCode.replace(/_/g, '-'); //replace all underscore with dash
 
-    var connection = nodeLib.connect({
-        repoId: "com.enonic.app.discussion",
+    const connection = nodeLib.connect({
+        repoId: commentLib.REPO_ID,
         branch: "master",
     });
 
     //query the latest comments here
-    var result = connection.query({
+    const result = connection.query({
         start: 0,
         count: size,
         query: "",
@@ -49,13 +49,13 @@ exports.get = function (req) {
         },
     });
 
-    var comments = [];
+    const comments = [];
 
-    for (var i = 0; i < result.hits.length; i++) {
-        var commentId = result.hits[i].id;
-        var node = connection.get(commentId);
+    for (let i = 0; i < result.hits.length; i++) {
+        const commentId = result.hits[i].id;
+        const node = connection.get(commentId);
 
-        var nodeContext = contentLib.get({ key: node.content });
+        const nodeContext = contentLib.get({ key: node.content });
         //If content is deleted we cant use it.
         if (!nodeContext) {
             comments[i] = null;
@@ -64,27 +64,23 @@ exports.get = function (req) {
         comments[i] = commentLib.getNodeData(node);
         comments[i].contentUrl = portal.pageUrl({ id: node.content });
         comments[i].contentName = contentLib.get({ key: node.content }).displayName;
-        comments[i].text = comments[i].text;
     }
 
-    var on = i18n.localize({
-        key: "on",
-        local: langCode,
-    });
-
-    var model = {
+    const model = {
         comments: comments,
         headline: headline,
-        local: { on: on },
+        local: {
+            on: i18n.localize({key: "comments.on", local: langCode })
+        },
     };
 
-    var view = resolve("latest.html");
+    const view = resolve("latest-comments.html");
 
-    var addition = [];
-    var siteConfig = portal.getSiteConfig();
+    const addition = [];
+    const siteConfig = portal.getSiteConfig();
 
     if (siteConfig.defaultStyle) {
-        addition.push("<link rel='stylesheet' href='" + portal.assetUrl({ path: "css/default.css" }) + "'/>");
+        addition.push("<link rel='stylesheet' href='" + portal.assetUrl({ path: "css/comments.css" }) + "'/>");
     }
 
     return {

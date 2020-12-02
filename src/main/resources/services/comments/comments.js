@@ -1,13 +1,10 @@
-var commentLib = require("/lib/commentManager");
-//var tools = require("/lib/tools");
+const commentLib = require("/lib/comments");
+//const tools = require("/lib/tools");
 
-exports.post = postComment;
+exports.post = function(req) {
+    const params = req.params;
 
-function postComment(req) {
-    var params = req.params;
-
-    var comment;
-
+    let comment = null;
     if (params.parent) {
         comment = commentLib.createComment(params.comment, params.content, params.parent);
     }
@@ -17,13 +14,15 @@ function postComment(req) {
     else if (params.comment && params.comment.length > 0) {
         comment = commentLib.createComment(params.comment, params.content);
     }
-    if (comment == null) {
-        log.info("Could not create new comment!\n" + req);
-        return null;
+    if (!comment) {
+        log.warning("Could not create new comment. Request: " + JSON.stringify(req));
+        return {
+            status: 500,
+            body: "Comment not created. Error is logged on server."
+        };
     }
 
-    var nodeData = commentLib.getNodeData(comment);
-
+    const nodeData = commentLib.getNodeData(comment);
     return {
         body: {
             data: nodeData,
