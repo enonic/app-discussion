@@ -31,6 +31,6 @@ repositories {
         url 'https://dl.bintray.com/openxp/public'
     } */
     mavenLocal()
-    jcenter()
+    mavenCentral()
     xp.enonicRepo()
 }
