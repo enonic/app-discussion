@@ -22,7 +22,7 @@ dependencies {
     include "com.enonic.xp:lib-auth:${xpVersion}"
     include "com.enonic.xp:lib-repo:${xpVersion}"
 
-    include "com.enonic.lib:lib-thymeleaf:2.0.0"
+    include "com.enonic.lib:lib-thymeleaf:2.0.2"
     //include 'openxp.lib:appersist:1.0.0'
 }
 
