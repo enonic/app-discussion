@@ -1,0 +1,10 @@
+kind: "CMS"
+form:
+  - type: "CheckBox"
+    name: "defaultStyle"
+    label: "Use default style"
+    helpText: "If you have your own styling turn this off"
+    default: "checked"
+    occurrences:
+      min: 0
+      max: 1

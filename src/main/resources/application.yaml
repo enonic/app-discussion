@@ -1,0 +1,5 @@
+kind: "Application"
+title: "Discussion app"
+description: "Gives your website the possibility to list and create comments"
+vendorName: "Enonic AS"
+vendorUrl: "http://enonic.com"
