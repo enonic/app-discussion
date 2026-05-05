@@ -1,5 +1,5 @@
 <section id="discussion" th:if="${ render }">
-    <div th:replace="/site/parts/comment-field/comment-tree::nestedComment (${ discussion })"
+    <div th:replace="/cms/parts/comment-field/comment-tree::nestedComment (${ discussion })"
         th:remove="tag"></div>
     <form class="startDiscussion" autocomplete="off" th:action="${ serviceUrl }">
         <!--/* I'm really not a fan of exposing the current content to the user */-->
