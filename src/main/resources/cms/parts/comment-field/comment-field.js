@@ -1,4 +1,5 @@
 var portal = require("/lib/xp/portal");
+var assetLib = require("/lib/enonic/asset");
 var contentLib = require("/lib/xp/content");
 var thymeleaf = require("/lib/thymeleaf");
 var commentLib = require("/lib/commentManager");
@@ -60,21 +61,21 @@ exports.get = function (ref) {
     var view = resolve("comment-field.html");
 
     var addition = [
-        "<script src='" + portal.assetUrl({ path: "script/lib/jquery-3.3.1.min.js" }) + "'></script>",
+        "<script src='" + assetLib.assetUrl({ path: "script/lib/jquery-3.3.1.min.js" }) + "'></script>",
     ];
 
     var siteConfig = portal.getSiteConfig();
 
     if (siteConfig.defaultStyle) {
-        addition.push("<link rel='stylesheet' href='" + portal.assetUrl({ path: "css/default.css" }) + "'/>");
-    }    
+        addition.push("<link rel='stylesheet' href='" + assetLib.assetUrl({ path: "css/default.css" }) + "'/>");
+    }
 
     return {
         body: thymeleaf.render(view, model),
         pageContributions: {
             headEnd: addition,
             bodyEnd: [
-                "<script src='" + portal.assetUrl({ path: "script/comment-post.js" }) + "'></script>",
+                "<script src='" + assetLib.assetUrl({ path: "script/comment-post.js" }) + "'></script>",
             ]
         }
     };
