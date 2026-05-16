@@ -3,6 +3,7 @@ var commentLib = require("/lib/commentManager");
 var contentLib = require("/lib/xp/content");
 var nodeLib = require('/lib/xp/node');
 var portal = require('/lib/xp/portal');
+var assetLib = require('/lib/enonic/asset');
 var i18n = require('/lib/xp/i18n');
 //var tools = require('/lib/tools');
 
@@ -84,7 +85,7 @@ exports.get = function (req) {
     var siteConfig = portal.getSiteConfig();
 
     if (siteConfig.defaultStyle) {
-        addition.push("<link rel='stylesheet' href='" + portal.assetUrl({ path: "css/default.css" }) + "'/>");
+        addition.push("<link rel='stylesheet' href='" + assetLib.assetUrl({ path: "css/default.css" }) + "'/>");
     }
 
     return {

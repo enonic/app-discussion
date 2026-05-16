@@ -15,6 +15,7 @@ dependencies {
     include xplibs.repo
 
     include "com.enonic.lib:lib-thymeleaf:3.0.0-SNAPSHOT"
+    include "com.enonic.lib:lib-asset:2.0.0-SNAPSHOT"
     //include 'openxp.lib:appersist:1.0.0'
 }
 
